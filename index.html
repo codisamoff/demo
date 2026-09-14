@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="description" content="DADA'S Restaurant & Café — QR Menu Admin Panel Demo" />
+<title>DADA'S · Restaurant Admin Panel</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<div class="app">
+
+  <!-- ============================ SIDEBAR ============================ -->
+  <aside class="sidebar" id="sidebar" aria-label="Main navigation">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true">D</div>
+      <div class="brand-text">
+        <span class="brand-name" id="brandName">DADA'S</span>
+        <span class="brand-sub" id="brandTagline">Restaurant &amp; Café</span>
+      </div>
+      <button class="icon-btn sidebar-close" id="sidebarClose" aria-label="Close navigation">
+        <i data-lucide="x"></i>
+      </button>
+    </div>
+
+    <nav class="nav" id="nav">
+      <button class="nav-item active" data-page="dashboard">
+        <i data-lucide="layout-dashboard"></i><span>Dashboard</span>
+      </button>
+      <button class="nav-item" data-page="menu">
+        <i data-lucide="book-open"></i><span>Menu</span>
+      </button>
+      <button class="nav-item" data-page="categories">
+        <i data-lucide="layers"></i><span>Categories</span>
+      </button>
+      <button class="nav-item" data-page="qr">
+        <i data-lucide="qr-code"></i><span>QR Menu</span>
+      </button>
+      <button class="nav-item" data-page="orders">
+        <i data-lucide="receipt-text"></i><span>Orders</span>
+      </button>
+      <button class="nav-item" data-page="analytics">
+        <i data-lucide="bar-chart-3"></i><span>Analytics</span>
+      </button>
+      <button class="nav-item" data-page="customers">
+        <i data-lucide="users"></i><span>Customers</span>
+      </button>
+      <button class="nav-item" data-page="settings">
+        <i data-lucide="settings"></i><span>Settings</span>
+      </button>
+    </nav>
+
+    <div class="sidebar-foot">
+      <div class="plan-card">
+        <div class="plan-top">
+          <i data-lucide="sparkles"></i>
+          <span>Pro Plan</span>
+        </div>
+        <p>Unlimited menu items &amp; QR scans.</p>
+        <div class="plan-bar"><span style="width:72%"></span></div>
+        <small>72% of monthly scans used</small>
+      </div>
+    </div>
+  </aside>
+
+  <div class="sidebar-backdrop" id="sidebarBackdrop" hidden></div>
+
+  <!-- ============================ MAIN ============================ -->
+  <div class="main">
+
+    <!-- ---------------------------- TOPBAR ---------------------------- -->
+    <header class="topbar">
+      <button class="icon-btn menu-btn" id="menuBtn" aria-label="Open navigation">
+        <i data-lucide="menu"></i>
+      </button>
+
+      <div class="page-heading">
+        <h1 id="pageTitle">Dashboard</h1>
+        <p id="pageSubtitle">Overview of your restaurant</p>
+      </div>
+
+      <div class="topbar-actions">
+        <label class="search-box" for="globalSearch">
+          <i data-lucide="search"></i>
+          <input id="globalSearch" type="search" placeholder="Search menu items…" aria-label="Search menu items" autocomplete="off" />
+        </label>
+
+        <div class="status-pill" title="Restaurant status">
+          <span class="pulse" aria-hidden="true"></span>
+          <span>Restaurant Online</span>
+        </div>
+
+        <button class="icon-btn" id="themeToggle" aria-label="Toggle dark mode" title="Toggle theme">
+          <i data-lucide="moon"></i>
+        </button>
+
+        <div class="dropdown" id="notifDropdown">
+          <button class="icon-btn" id="notifBtn" aria-label="Notifications" aria-haspopup="true" aria-expanded="false">
+            <i data-lucide="bell"></i>
+            <span class="notif-dot" aria-hidden="true"></span>
+          </button>
+          <div class="dropdown-panel notif-panel" role="menu" aria-label="Notifications">
+            <div class="dropdown-head">
+              <strong>Notifications</strong>
+              <span class="badge-soft">3 new</span>
+            </div>
+            <ul class="notif-list">
+              <li>
+                <span class="notif-icon ok"><i data-lucide="plus-circle"></i></span>
+                <div><p>New menu item added</p><small>5 min ago</small></div>
+              </li>
+              <li>
+                <span class="notif-icon info"><i data-lucide="qr-code"></i></span>
+                <div><p>QR menu received 24 scans</p><small>20 min ago</small></div>
+              </li>
+              <li>
+                <span class="notif-icon warn"><i data-lucide="alert-circle"></i></span>
+                <div><p>Butter Chicken marked unavailable</p><small>1 hour ago</small></div>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="dropdown" id="profileDropdown">
+          <button class="profile-btn" id="profileBtn" aria-haspopup="true" aria-expanded="false">
+            <span class="avatar" aria-hidden="true">D</span>
+            <span class="profile-meta">
+              <strong>Dada's</strong>
+              <small>Owner</small>
+            </span>
+            <i data-lucide="chevron-down" class="chev"></i>
+          </button>
+          <div class="dropdown-panel profile-panel" role="menu" aria-label="Account menu">
+            <div class="profile-head">
+              <span class="avatar lg" aria-hidden="true">D</span>
+              <div>
+                <strong>DADA'S RESTAURANT</strong>
+                <small>hello@dadas.example</small>
+              </div>
+            </div>
+            <button class="dropdown-item" data-action="go-settings" role="menuitem">
+              <i data-lucide="store"></i> Restaurant Profile
+            </button>
+            <button class="dropdown-item" data-action="go-settings" role="menuitem">
+              <i data-lucide="settings"></i> Settings
+            </button>
+            <div class="dropdown-sep"></div>
+            <button class="dropdown-item danger" data-action="logout" role="menuitem">
+              <i data-lucide="log-out"></i> Logout
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- ---------------------------- CONTENT ---------------------------- -->
+    <main class="content" id="content">
+
+      <!-- ======================= DASHBOARD ======================= -->
+      <section class="page active" id="page-dashboard" aria-labelledby="dashHeading">
+        <div class="hero-card">
+          <div class="hero-text">
+            <h2 id="dashHeading">Good evening, Dada's 👋</h2>
+            <p>Here's what's happening with your restaurant today.</p>
+          </div>
+          <div class="hero-actions">
+            <button class="btn btn-primary" data-action="add-item">
+              <i data-lucide="plus"></i> Add Menu Item
+            </button>
+            <button class="btn btn-ghost" data-page="qr">
+              <i data-lucide="qr-code"></i> View QR Menu
+            </button>
+          </div>
+        </div>
+
+        <div class="stat-grid" id="statGrid"></div>
+
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-head">
+              <div>
+                <h3>QR Menu Scans</h3>
+                <p class="muted-sm">Last 7 days performance</p>
+              </div>
+              <div class="select-mini">
+                <select id="chartRange" aria-label="Chart range">
+                  <option value="week" selected>This week</option>
+                  <option value="prev">Last week</option>
+                </select>
+              </div>
+            </div>
+            <div class="chart-holder" id="scanChart"></div>
+            <div class="chart-legend">
+              <span class="legend-item"><i class="swatch gold"></i> QR Scans</span>
+              <span class="legend-total">Total <strong id="chartTotal">1,284</strong></span>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head">
+              <div>
+                <h3>Recent Activity</h3>
+                <p class="muted-sm">Latest updates from your team</p>
+              </div>
+            </div>
+            <ul class="activity-list" id="activityList"></ul>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <h3>Quick Actions</h3>
+              <p class="muted-sm">Jump straight into the things you do most</p>
+            </div>
+          </div>
+          <div class="quick-grid">
+            <button class="quick-btn" data-action="add-item">
+              <span class="quick-icon"><i data-lucide="plus-circle"></i></span>
+              <span class="quick-label">Add Menu Item</span>
+              <i data-lucide="arrow-up-right" class="quick-arrow"></i>
+            </button>
+            <button class="quick-btn" data-action="add-category">
+              <span class="quick-icon"><i data-lucide="folder-plus"></i></span>
+              <span class="quick-label">Add Category</span>
+              <i data-lucide="arrow-up-right" class="quick-arrow"></i>
+            </button>
+            <button class="quick-btn" data-page="qr">
+              <span class="quick-icon"><i data-lucide="qr-code"></i></span>
+              <span class="quick-label">View QR Menu</span>
+              <i data-lucide="arrow-up-right" class="quick-arrow"></i>
+            </button>
+            <button class="quick-btn" data-page="settings">
+              <span class="quick-icon"><i data-lucide="store"></i></span>
+              <span class="quick-label">Edit Restaurant</span>
+              <i data-lucide="arrow-up-right" class="quick-arrow"></i>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ======================= MENU ======================= -->
+      <section class="page" id="page-menu" aria-label="Menu management">
+        <div class="toolbar card">
+          <div class="toolbar-row">
+            <label class="search-box wide" for="menuSearch">
+              <i data-lucide="search"></i>
+              <input id="menuSearch" type="search" placeholder="Search menu items…" aria-label="Search menu items" autocomplete="off" />
+            </label>
+            <button class="btn btn-primary" data-action="add-item">
+              <i data-lucide="plus"></i> Add Item
+            </button>
+          </div>
+
+          <div class="toolbar-row wrap">
+            <div class="chips" role="group" aria-label="Filter menu items">
+              <button class="chip active" data-filter="all">All</button>
+              <button class="chip" data-filter="available">Available</button>
+              <button class="chip" data-filter="unavailable">Unavailable</button>
+              <button class="chip" data-filter="veg">Veg</button>
+              <button class="chip" data-filter="nonveg">Non-Veg</button>
+            </div>
+            <div class="select-mini">
+              <select id="menuCategoryFilter" aria-label="Filter by category">
+                <option value="all">All categories</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="card table-card">
+          <div class="table-wrap">
+            <table class="data" id="menuTable">
+              <thead>
+                <tr>
+                  <th scope="col">Item</th>
+                  <th scope="col">Category</th>
+                  <th scope="col">Price</th>
+                  <th scope="col">Type</th>
+                  <th scope="col">Availability</th>
+                  <th scope="col" class="ta-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="menuBody"></tbody>
+            </table>
+          </div>
+          <div class="empty-state" id="menuEmpty" hidden>
+            <div class="empty-icon"><i data-lucide="search-x"></i></div>
+            <h4>No menu items found</h4>
+            <p>Try changing your search or filter.</p>
+            <button class="btn btn-ghost" data-action="clear-filters">Clear filters</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ======================= CATEGORIES ======================= -->
+      <section class="page" id="page-categories" aria-label="Category management">
+        <div class="toolbar card">
+          <div class="toolbar-row">
+            <div>
+              <h3 class="toolbar-title">Categories</h3>
+              <p class="muted-sm">Group your dishes so guests can browse faster.</p>
+            </div>
+            <button class="btn btn-primary" data-action="add-category">
+              <i data-lucide="plus"></i> Add Category
+            </button>
+          </div>
+        </div>
+
+        <div class="card table-card">
+          <div class="table-wrap">
+            <table class="data" id="catTable">
+              <thead>
+                <tr>
+                  <th scope="col">Category</th>
+                  <th scope="col">Items</th>
+                  <th scope="col">Status</th>
+                  <th scope="col" class="ta-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="catBody"></tbody>
+            </table>
+          </div>
+          <div class="empty-state" id="catEmpty" hidden>
+            <div class="empty-icon"><i data-lucide="layers"></i></div>
+            <h4>No categories yet</h4>
+            <p>Create your first category to organise the menu.</p>
+            <button class="btn btn-primary" data-action="add-category">Add Category</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ======================= QR MENU ======================= -->
+      <section class="page" id="page-qr" aria-label="QR menu">
+        <div class="qr-layout">
+          <div class="card qr-card">
+            <div class="qr-card-head">
+              <h3>Your Digital Menu</h3>
+              <p class="muted-sm">Customers can scan this QR code to view Dada's menu.</p>
+            </div>
+
+            <div class="qr-frame" id="qrFrame">
+              <div class="qr-target" id="qrTarget"></div>
+              <div class="qr-logo" id="qrLogo" hidden>D</div>
+            </div>
+
+            <div class="qr-caption">
+              <span class="qr-brand">DADA'S RESTAURANT</span>
+              <span class="qr-sub">Digital Menu</span>
+            </div>
+
+            <div class="qr-actions">
+              <button class="btn btn-primary" data-action="download-qr">
+                <i data-lucide="download"></i> Download QR
+              </button>
+              <button class="btn btn-ghost" data-action="copy-link">
+                <i data-lucide="link"></i> Copy Menu Link
+              </button>
+              <button class="btn btn-ghost" data-action="open-menu">
+                <i data-lucide="external-link"></i> Open Menu
+              </button>
+            </div>
+
+            <div class="qr-url">
+              <i data-lucide="globe"></i>
+              <span id="qrUrlText">https://dadasrestaurant.example/menu</span>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head">
+              <div>
+                <h3>QR Settings</h3>
+                <p class="muted-sm">Customise how your QR code looks</p>
+              </div>
+            </div>
+
+            <div class="form-grid">
+              <div class="field">
+                <label for="qrSize">QR Size</label>
+                <select id="qrSize">
+                  <option value="180">Small (180px)</option>
+                  <option value="220" selected>Medium (220px)</option>
+                  <option value="280">Large (280px)</option>
+                </select>
+              </div>
+
+              <div class="field">
+                <label for="qrLogoSelect">Logo</label>
+                <select id="qrLogoSelect">
+                  <option value="none">No logo</option>
+                  <option value="dark" selected>Dada's mark (dark)</option>
+                  <option value="gold">Dada's mark (gold)</option>
+                </select>
+              </div>
+
+              <div class="field">
+                <label for="qrRestaurantName">Restaurant Name</label>
+                <input id="qrRestaurantName" type="text" value="DADA'S RESTAURANT" />
+              </div>
+
+              <div class="field switch-field">
+                <div>
+                  <label for="qrBorder">Border</label>
+                  <p class="muted-sm">Add a thin frame around the code</p>
+                </div>
+                <button class="switch on" id="qrBorder" type="button" role="switch" aria-checked="true" aria-label="Toggle QR border"><span></span></button>
+              </div>
+            </div>
+
+            <div class="card-foot">
+              <button class="btn btn-primary" data-action="save-qr">
+                <i data-lucide="check"></i> Save Changes
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ======================= ORDERS ======================= -->
+      <section class="page" id="page-orders" aria-label="Orders">
+        <div class="stat-grid four" id="orderStats"></div>
+
+        <div class="card table-card">
+          <div class="card-head">
+            <div>
+              <h3>Recent Orders</h3>
+              <p class="muted-sm">Live feed from your QR menu</p>
+            </div>
+            <div class="chips" role="group" aria-label="Filter orders">
+              <button class="chip active" data-order-filter="all">All</button>
+              <button class="chip" data-order-filter="Pending">Pending</button>
+              <button class="chip" data-order-filter="Completed">Completed</button>
+              <button class="chip" data-order-filter="Cancelled">Cancelled</button>
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table class="data" id="ordersTable">
+              <thead>
+                <tr>
+                  <th scope="col">Order ID</th>
+                  <th scope="col">Customer</th>
+                  <th scope="col">Items</th>
+                  <th scope="col">Amount</th>
+                  <th scope="col">Status</th>
+                  <th scope="col">Time</th>
+                </tr>
+              </thead>
+              <tbody id="ordersBody"></tbody>
+            </table>
+          </div>
+          <div class="empty-state" id="ordersEmpty" hidden>
+            <div class="empty-icon"><i data-lucide="receipt-text"></i></div>
+            <h4>No orders found</h4>
+            <p>No orders match this filter right now.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ======================= ANALYTICS ======================= -->
+      <section class="page" id="page-analytics" aria-label="Analytics">
+        <div class="stat-grid four" id="analyticsStats"></div>
+
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <h3>Traffic Overview</h3>
+              <p class="muted-sm">QR scans vs menu views — last 7 days</p>
+            </div>
+            <div class="chart-legend inline">
+              <span class="legend-item"><i class="swatch gold"></i> QR Scans</span>
+              <span class="legend-item"><i class="swatch ink"></i> Menu Views</span>
+            </div>
+          </div>
+          <div class="chart-holder" id="trafficChart"></div>
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-head">
+              <div>
+                <h3>Popular Categories</h3>
+                <p class="muted-sm">Views by category this week</p>
+              </div>
+            </div>
+            <div class="chart-holder" id="categoryChart"></div>
+          </div>
+
+          <div class="card">
+            <div class="card-head">
+              <div>
+                <h3>Top Performing Items</h3>
+                <p class="muted-sm">Most viewed dishes</p>
+              </div>
+            </div>
+            <ul class="rank-list" id="rankList"></ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- ======================= CUSTOMERS ======================= -->
+      <section class="page" id="page-customers" aria-label="Customers">
+        <div class="stat-grid four" id="customerStats"></div>
+
+        <div class="card table-card">
+          <div class="card-head">
+            <div>
+              <h3>Customer Directory</h3>
+              <p class="muted-sm">Guests who interacted with your QR menu</p>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table class="data" id="customersTable">
+              <thead>
+                <tr>
+                  <th scope="col">Customer</th>
+                  <th scope="col">Visits</th>
+                  <th scope="col">Last Visit</th>
+                  <th scope="col">Favourite Item</th>
+                </tr>
+              </thead>
+              <tbody id="customersBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ======================= SETTINGS ======================= -->
+      <section class="page" id="page-settings" aria-label="Settings">
+        <div class="settings-grid">
+
+          <div class="card">
+            <div class="card-head">
+              <div>
+                <h3>Restaurant Information</h3>
+                <p class="muted-sm">Basic details shown on your digital menu</p>
+              </div>
+            </div>
+            <div class="form-grid">
+              <div class="field">
+                <label for="setName">Restaurant Name</label>
+                <input id="setName" type="text" />
+              </div>
+              <div class="field">
+                <label for="setTagline">Tagline</label>
+                <input id="setTagline" type="text" />
+              </div>
+              <div class="field">
+                <label for="setPhone">Phone</label>
+                <input id="setPhone" type="tel" />
+              </div>
+              <div class="field">
+                <label for="setEmail">Email</label>
+                <input id="setEmail" type="email" />
+              </div>
+              <div class="field full">
+                <label for="setAddress">Address</label>
+                <input id="setAddress" type="text" />
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head">
+              <div>
+                <h3>Business Hours</h3>
+                <p class="muted-sm">When guests can order</p>
+              </div>
+            </div>
+            <div class="form-grid">
+              <div class="field full">
+                <label for="setDays">Days</label>
+                <input id="setDays" type="text" />
+              </div>
+              <div class="field full">
+                <label for="setHours">Hours</label>
+                <input id="setHours" type="text" />
+              </div>
+            </div>
+
+            <div class="card-head spaced">
+              <div>
+                <h3>Social Links</h3>
+                <p class="muted-sm">Connect your social profiles</p>
+              </div>
+            </div>
+            <div class="form-grid">
+              <div class="field">
+                <label for="setInstagram">Instagram</label>
+                <input id="setInstagram" type="text" />
+              </div>
+              <div class="field">
+                <label for="setFacebook">Facebook</label>
+                <input id="setFacebook" type="text" />
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head">
+              <div>
+                <h3>Branding</h3>
+                <p class="muted-sm">Colours applied across your menu</p>
+              </div>
+            </div>
+            <div class="form-grid">
+              <div class="field">
+                <label for="setLogo">Restaurant Logo</label>
+                <select id="setLogo">
+                  <option value="D">Dada's Monogram</option>
+                  <option value="DADA'S">Wordmark</option>
+                  <option value="🍽">Utensils</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="setPrimary">Primary Colour</label>
+                <input id="setPrimary" type="color" />
+              </div>
+              <div class="field">
+                <label for="setAccent">Accent Colour</label>
+                <input id="setAccent" type="color" />
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head">
+              <div>
+                <h3>Demo Data</h3>
+                <p class="muted-sm">Restore the original sample content</p>
+              </div>
+            </div>
+            <p class="muted-sm block-text">
+              This resets menu items, categories, orders and settings back to the original demo values.
+            </p>
+            <div class="card-foot">
+              <button class="btn btn-danger-soft" data-action="reset-demo">
+                <i data-lucide="rotate-ccw"></i> Reset Demo Data
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="settings-save">
+          <button class="btn btn-primary lg" data-action="save-settings">
+            <i data-lucide="check"></i> Save Changes
+          </button>
+        </div>
+      </section>
+
+    </main>
+  </div>
+</div>
+
+<!-- ============================ ITEM MODAL ============================ -->
+<div class="modal" id="itemModal" role="dialog" aria-modal="true" aria-labelledby="itemModalTitle" hidden>
+  <div class="modal-backdrop" data-close-modal></div>
+  <div class="modal-panel">
+    <header class="modal-head">
+      <h3 id="itemModalTitle">Add Menu Item</h3>
+      <button class="icon-btn" type="button" data-close-modal aria-label="Close dialog"><i data-lucide="x"></i></button>
+    </header>
+
+    <form id="itemForm" class="modal-body" novalidate>
+      <input type="hidden" id="itemId" />
+
+      <div class="field">
+        <label for="itemName">Item Name</label>
+        <input id="itemName" name="name" type="text" placeholder="e.g. Paneer Tikka" required />
+      </div>
+
+      <div class="field">
+        <label for="itemDesc">Description</label>
+        <textarea id="itemDesc" name="desc" rows="2" placeholder="Short description shown to guests"></textarea>
+      </div>
+
+      <div class="form-grid">
+        <div class="field">
+          <label for="itemPrice">Price (₹)</label>
+          <input id="itemPrice" name="price" type="number" min="1" step="1" placeholder="280" required />
+        </div>
+        <div class="field">
+          <label for="itemCategory">Category</label>
+          <select id="itemCategory" name="category" required></select>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Food Type</label>
+        <div class="radio-pills" role="radiogroup" aria-label="Food type">
+          <label class="radio-pill">
+            <input type="radio" name="type" value="veg" checked />
+            <span><i class="dotmark veg"></i> Veg</span>
+          </label>
+          <label class="radio-pill">
+            <input type="radio" name="type" value="nonveg" />
+            <span><i class="dotmark nonveg"></i> Non-Veg</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="itemImage">Image URL</label>
+        <input id="itemImage" name="image" type="url" placeholder="https://…" />
+      </div>
+
+      <div class="field switch-field">
+        <div>
+          <label for="itemAvailable">Availability</label>
+          <p class="muted-sm">Guests can order this item right now</p>
+        </div>
+        <button class="switch on" id="itemAvailable" type="button" role="switch" aria-checked="true" aria-label="Toggle availability"><span></span></button>
+      </div>
+
+      <footer class="modal-foot">
+        <button type="button" class="btn btn-ghost" data-close-modal>Cancel</button>
+        <button type="submit" class="btn btn-primary" id="itemSubmitBtn">Add Item</button>
+      </footer>
+    </form>
+  </div>
+</div>
+
+<!-- ============================ CATEGORY MODAL ============================ -->
+<div class="modal" id="categoryModal" role="dialog" aria-modal="true" aria-labelledby="categoryModalTitle" hidden>
+  <div class="modal-backdrop" data-close-modal></div>
+  <div class="modal-panel sm">
+    <header class="modal-head">
+      <h3 id="categoryModalTitle">Add Category</h3>
+      <button class="icon-btn" type="button" data-close-modal aria-label="Close dialog"><i data-lucide="x"></i></button>
+    </header>
+    <form id="categoryForm" class="modal-body" novalidate>
+      <input type="hidden" id="categoryId" />
+      <div class="field">
+        <label for="categoryName">Category Name</label>
+        <input id="categoryName" type="text" placeholder="e.g. Starters" required />
+      </div>
+      <div class="field">
+        <label for="categoryStatus">Status</label>
+        <select id="categoryStatus">
+          <option value="Active">Active</option>
+          <option value="Hidden">Hidden</option>
+        </select>
+      </div>
+      <footer class="modal-foot">
+        <button type="button" class="btn btn-ghost" data-close-modal>Cancel</button>
+        <button type="submit" class="btn btn-primary" id="categorySubmitBtn">Add Category</button>
+      </footer>
+    </form>
+  </div>
+</div>
+
+<!-- ============================ CONFIRM MODAL ============================ -->
+<div class="modal" id="confirmModal" role="dialog" aria-modal="true" aria-labelledby="confirmTitle" hidden>
+  <div class="modal-backdrop" data-close-modal></div>
+  <div class="modal-panel sm">
+    <div class="modal-body confirm-body">
+      <div class="confirm-icon"><i data-lucide="alert-triangle"></i></div>
+      <h3 id="confirmTitle">Delete this menu item?</h3>
+      <p class="muted" id="confirmMessage">Are you sure?</p>
+    </div>
+    <footer class="modal-foot">
+      <button type="button" class="btn btn-ghost" data-close-modal>Cancel</button>
+      <button type="button" class="btn btn-danger" id="confirmOk">Delete</button>
+    </footer>
+  </div>
+</div>
+
+<!-- ============================ MENU PREVIEW MODAL ============================ -->
+<div class="modal" id="previewModal" role="dialog" aria-modal="true" aria-labelledby="previewTitle" hidden>
+  <div class="modal-backdrop" data-close-modal></div>
+  <div class="modal-panel preview-panel">
+    <header class="modal-head">
+      <h3 id="previewTitle">Menu Preview</h3>
+      <button class="icon-btn" type="button" data-close-modal aria-label="Close dialog"><i data-lucide="x"></i></button>
+    </header>
+    <div class="modal-body preview-body">
+      <div class="phone">
+        <div class="phone-notch" aria-hidden="true"></div>
+        <div class="phone-head">
+          <span class="phone-brand" id="phoneBrand">DADA'S</span>
+          <span class="phone-sub" id="phoneSub">Restaurant &amp; Café</span>
+        </div>
+        <div class="phone-body" id="phoneMenu"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================ TOASTS ============================ -->
+<div class="toasts" id="toasts" aria-live="polite" aria-atomic="true"></div>
+
+<!-- ============================ LIBRARIES ============================ -->
+<script src="https://unpkg.com/lucide@0.454.0/dist/umd/lucide.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
