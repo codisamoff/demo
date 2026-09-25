@@ -1,5 +1,5 @@
 /* ============================================================
- D A**DA'S RESTAURANT — Admin Panel Logic
+ D ADA*'S RESTAURANT — Admin Panel Logic
  Vanilla JavaScript. No framework.
  ============================================================ */
 
@@ -13,8 +13,6 @@
     const THEME_KEY   = 'dadasAdminTheme';
     const MENU_URL    = 'https://dadasrestaurant.example/menu';
     const DAYS        = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-    // Demo base so dashboard + orders page tell one coherent story:
-    // 12 seeded orders + 70 earlier today = 82 total.
     const TODAY_ORDERS_BASE = 70;
 
     /* ==========================================================
@@ -45,7 +43,6 @@
         return (Number(n) || 0).toLocaleString('en-IN');
     }
 
-    /** Pick readable text colour for any background hex. */
     function contrastColor(hex) {
         if (!hex || typeof hex !== 'string') return '#ffffff';
         let h = hex.replace('#', '').trim();
@@ -58,7 +55,6 @@
         return lum > 0.62 ? '#1c1a17' : '#ffffff';
     }
 
-    /** Generate an inline SVG placeholder for a failed image. */
     function placeholderImage(name, type) {
         const letter = (name || '?').trim().charAt(0).toUpperCase() || '?';
         const c1 = type === 'nonveg' ? '#c0392b' : '#2f8f5b';
@@ -75,15 +71,12 @@
         return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
     }
 
-    /** Re-initialise Lucide icons after dynamic rendering. */
     function refreshIcons() {
         try {
             if (window.lucide && typeof window.lucide.createIcons === 'function') {
                 window.lucide.createIcons();
             }
-        } catch (err) {
-            /* Silently ignore — icons are decorative. */
-        }
+        } catch (err) { /* icons are decorative */ }
     }
 
     function debounce(fn, wait = 180) {
@@ -97,10 +90,7 @@
     /* ==========================================================
      * 3. DEFAULT DATA
      * ========================================================== */
-
-    // [name, price, category, type, description, unsplashId]
     const RAW_ITEMS = [
-        // ---- Starters (7)
         ['Paneer Tikka', 280, 'Starters', 'veg', 'Char-grilled cottage cheese with peppers and mint chutney.', '1565557623262-b51c2513a641'],
         ['Hara Bhara Kebab', 240, 'Starters', 'veg', 'Spinach and green pea patties, pan-seared till crisp.', '1601050690597-df0568f70950'],
         ['Tandoori Chicken', 380, 'Starters', 'nonveg', 'Half chicken marinated overnight in yoghurt and spices.', '1599487488170-d11ec9c172f0'],
@@ -109,7 +99,6 @@
         ['Chilli Paneer', 260, 'Starters', 'veg', 'Wok-tossed paneer with bell peppers in a spicy soy glaze.', '1567188040759-fb8a883dc6d8'],
         ['Fish Amritsari', 360, 'Starters', 'nonveg', 'Gram-flour battered fish with carom seeds and lemon.', '1519708227418-c8fd9a32b7a2'],
 
-        // ---- Main Course (8)
         ['Butter Chicken', 360, 'Main Course', 'nonveg', 'Tandoori chicken simmered in a velvety tomato-butter gravy.', '1588166524941-3bf61a9c41db'],
         ['Dal Makhani', 240, 'Main Course', 'veg', 'Black lentils slow-cooked overnight with cream and butter.', '1546833999-b9f581a1996d'],
         ['Paneer Butter Masala', 300, 'Main Course', 'veg', 'Soft paneer cubes in a rich, mildly sweet tomato gravy.', '1631452180519-c014fe946bc7'],
@@ -119,14 +108,12 @@
         ['Mix Veg Curry', 250, 'Main Course', 'veg', 'Seasonal vegetables in a light, aromatic onion-tomato masala.', '1585937421612-70a008356fbe'],
         ['Malai Kofta', 300, 'Main Course', 'veg', 'Paneer dumplings in a creamy cashew and saffron sauce.', '1631452180519-c014fe946bc7'],
 
-        // ---- Breads (5)
         ['Garlic Naan', 80, 'Breads', 'veg', 'Tandoor-baked flatbread brushed with garlic butter.', '1619221882220-947b3d3c8861'],
         ['Butter Naan', 70, 'Breads', 'veg', 'Soft leavened flatbread finished with melted butter.', '1619221882220-947b3d3c8861'],
         ['Tandoori Roti', 40, 'Breads', 'veg', 'Whole-wheat roti baked in the clay oven.', '1565557623262-b51c2513a641'],
         ['Laccha Paratha', 90, 'Breads', 'veg', 'Flaky layered paratha with a crisp golden exterior.', '1601050690597-df0568f70950'],
         ['Stuffed Kulcha', 110, 'Breads', 'veg', 'Amritsari kulcha stuffed with spiced potato and onion.', '1619221882220-947b3d3c8861'],
 
-        // ---- Rice & Biryani (6)
         ['Veg Biryani', 260, 'Rice & Biryani', 'veg', 'Fragrant basmati layered with spiced vegetables and saffron.', '1563379091339-03b21ab4a4f8'],
         ['Chicken Biryani', 320, 'Rice & Biryani', 'nonveg', 'Hyderabadi-style biryani with tender chicken and mint.', '1585937421612-70a008356fbe'],
         ['Mutton Biryani', 420, 'Rice & Biryani', 'nonveg', 'Slow-cooked mutton with long-grain basmati and whole spices.', '1563379091339-03b21ab4a4f8'],
@@ -134,7 +121,6 @@
         ['Egg Fried Rice', 220, 'Rice & Biryani', 'nonveg', 'Wok-fried rice with egg, spring onion and soy.', '1603133872878-684f208fb84b'],
         ['Hyderabadi Dum Biryani', 380, 'Rice & Biryani', 'nonveg', 'Sealed-pot dum biryani with saffron and fried onions.', '1585937421612-70a008356fbe'],
 
-        // ---- Chinese (6)
         ['Veg Manchurian', 240, 'Chinese', 'veg', 'Vegetable dumplings in a tangy garlic Manchurian sauce.', '1585032226651-759b368d7246'],
         ['Chilli Chicken', 320, 'Chinese', 'nonveg', 'Crispy chicken tossed with chilli, garlic and spring onion.', '1603133872878-684f208fb84b'],
         ['Hakka Noodles', 220, 'Chinese', 'veg', 'Stir-fried noodles with julienned vegetables.', '1585032226651-759b368d7246'],
@@ -142,7 +128,6 @@
         ['Chicken Manchurian', 340, 'Chinese', 'nonveg', 'Battered chicken in a glossy ginger-garlic sauce.', '1585032226651-759b368d7246'],
         ['Crispy Chilli Potato', 200, 'Chinese', 'veg', 'Honey-chilli glazed potato fingers with sesame.', '1603133872878-684f208fb84b'],
 
-        // ---- Beverages (6)
         ['Cold Coffee', 140, 'Beverages', 'veg', 'Thick blended coffee with ice cream and chocolate.', '1461023058943-07fcbe16d735'],
         ['Masala Chai', 60, 'Beverages', 'veg', 'Assam tea brewed with ginger, cardamom and clove.', '1571934811356-5cc061b6821f'],
         ['Fresh Lime Soda', 100, 'Beverages', 'veg', 'Sparkling lime with a choice of sweet or salted.', '1523677011781-c91d1bbe2f9e'],
@@ -150,14 +135,12 @@
         ['Mango Shake', 160, 'Beverages', 'veg', 'Alphonso mango blended with cold milk.', '1546173159-315724a31696'],
         ['Filter Coffee', 80, 'Beverages', 'veg', 'South Indian filter decoction with frothed milk.', '1461023058943-07fcbe16d735'],
 
-        // ---- Desserts (5)
         ['Gulab Jamun', 100, 'Desserts', 'veg', 'Warm milk dumplings soaked in cardamom sugar syrup.', '1601303516534-bf0e5f5e5a4d'],
         ['Chocolate Brownie', 180, 'Desserts', 'veg', 'Fudgy brownie served warm with vanilla ice cream.', '1606313564200-e75d5e30476c'],
         ['Rasmalai', 130, 'Desserts', 'veg', 'Saffron milk with soft cottage-cheese discs and pistachio.', '1601303516534-bf0e5f5e5a4d'],
         ['Gajar Ka Halwa', 140, 'Desserts', 'veg', 'Slow-cooked carrot pudding with ghee and almonds.', '1606313564200-e75d5e30476c'],
         ['Ice Cream Sundae', 160, 'Desserts', 'veg', 'Three scoops with chocolate sauce and roasted nuts.', '1567206563064-6f60f40a2b57'],
 
-        // ---- Mocktails (5)
         ['Virgin Mojito', 180, 'Mocktails', 'veg', 'Mint, lime and soda over crushed ice.', '1523677011781-c91d1bbe2f9e'],
         ['Blue Lagoon', 190, 'Mocktails', 'veg', 'Blue curaçao syrup, lemon and sparkling water.', '1546173159-315724a31696'],
         ['Watermelon Cooler', 170, 'Mocktails', 'veg', 'Fresh watermelon with basil and a squeeze of lime.', '1523677011781-c91d1bbe2f9e'],
@@ -173,7 +156,6 @@
     function buildMenuFromRaw() {
         return RAW_ITEMS.map((row, i) => {
             const [name, price, category, type, description, photoId] = row;
-            // A few items intentionally marked unavailable for a realistic demo.
             const unavailable = ['Fish Amritsari', 'Mutton Biryani', 'Rogan Josh', 'Passion Fruit Punch'].includes(name);
             return {
                 id: 'item_' + (i + 1),
@@ -257,12 +239,7 @@
  { name: 'Desserts',       value: 96 },
  { name: 'Mocktails',      value: 74 }
  ],
- qr: {
-     size: 220,
- logo: 'dark',
- name: "DADA'S RESTAURANT",
- border: true
- },
+ qr: { size: 220, logo: 'dark', name: "DADA'S RESTAURANT", border: true },
  settings: {
      name: "DADA'S",
  tagline: 'Restaurant & Café',
@@ -291,7 +268,6 @@
             if (raw) {
                 const parsed = JSON.parse(raw);
                 if (parsed && Array.isArray(parsed.menu)) {
-                    // Merge with defaults so new keys never break older saves.
                     return Object.assign(defaultState(), parsed, {
                         qr: Object.assign(defaultState().qr, parsed.qr || {}),
                                          settings: Object.assign(defaultState().settings, parsed.settings || {})
@@ -305,26 +281,16 @@
     }
 
     function saveState() {
-        try {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-        } catch (err) {
-            console.warn('Could not persist state.', err);
-        }
-    }
-
-    function resetState() {
-        state = defaultState();
-        saveState();
+        try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+        catch (err) { console.warn('Could not persist state.', err); }
     }
 
     /* ==========================================================
      * 5. TOASTS
      * ========================================================== */
     const TOAST_ICONS = {
-        success: 'check-circle',
- info: 'info',
- warning: 'alert-triangle',
- error: 'x-circle'
+        success: 'check-circle', info: 'info',
+ warning: 'alert-triangle', error: 'x-circle'
     };
 
     function showToast(message, type = 'success') {
@@ -341,14 +307,12 @@
 
         host.appendChild(el);
         refreshIcons();
-
         requestAnimationFrame(() => el.classList.add('show'));
 
         const remove = () => {
             el.classList.remove('show');
             setTimeout(() => el.remove(), 300);
         };
-
         const timer = setTimeout(remove, 3400);
         el.querySelector('.toast-close').addEventListener('click', () => {
             clearTimeout(timer);
@@ -365,7 +329,6 @@
         const el = typeof target === 'string' ? document.getElementById(target) : target;
         if (!el) return;
 
-        // Close any other open modal first
         $$('.modal.open').forEach(m => { if (m !== el) closeModal(m, true); });
 
         lastFocusedElement = document.activeElement;
@@ -398,12 +361,6 @@
             }
     }
 
-    function closeAllModals() {
-        $$('.modal').forEach(m => closeModal(m, true));
-        document.body.style.overflow = '';
-    }
-
-    /* Confirm modal helper */
     let confirmCallback = null;
 
     function openConfirm({ title, message, okLabel = 'Delete', okClass = 'btn-danger' }, onConfirm) {
@@ -430,15 +387,18 @@
             const icon = btn.querySelector('i, svg');
             if (icon) {
                 const name = theme === 'dark' ? 'sun' : 'moon';
-                icon.setAttribute('data-lucide', name);
-                // Recreate the icon element so Lucide re-renders correctly
                 const fresh = document.createElement('i');
                 fresh.setAttribute('data-lucide', name);
                 btn.replaceChild(fresh, icon);
             }
         }
+        // Keep profile-menu theme label in sync too
+        const pmIcon = document.querySelector('.dropdown-item[data-action="toggle-theme"] i, .dropdown-item[data-action="toggle-theme"] svg');
+        if (pmIcon) {
+            const name = theme === 'dark' ? 'sun' : 'moon';
+            pmIcon.setAttribute('data-lucide', name);
+        }
         refreshIcons();
-        // Charts use CSS vars for colour; re-render on theme flip.
         renderVisibleCharts();
     }
 
@@ -474,30 +434,24 @@
         if (!PAGE_META[page]) page = 'dashboard';
         currentPage = page;
 
-        // Swap visible section
         $$('.page').forEach(sec => sec.classList.remove('active'));
         const target = document.getElementById('page-' + page);
         if (target) target.classList.add('active');
 
-        // Update sidebar active state
         $$('.nav-item').forEach(btn => {
             btn.classList.toggle('active', btn.dataset.page === page);
         });
 
-        // Update heading
         const meta = PAGE_META[page];
         const titleEl = $('#pageTitle');
         const subEl = $('#pageSubtitle');
         if (titleEl) titleEl.textContent = meta.title;
         if (subEl) subEl.textContent = meta.subtitle;
 
-        // Lazy render page content
         renderPage(page);
-
-        // Close mobile sidebar
         closeSidebar();
+        closeMobileSearch();
 
-        // Scroll content to top
         const content = $('#content');
         if (content) content.scrollTop = 0;
         window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -524,13 +478,16 @@
     }
 
     /* ==========================================================
-     * 9. SIDEBAR (mobile)
+     * 9. SIDEBAR (mobile drawer)
      * ========================================================== */
     function openSidebar() {
         const sidebar = $('#sidebar');
         const backdrop = $('#sidebarBackdrop');
+        const menuBtn = $('#menuBtn');
         if (!sidebar) return;
         sidebar.classList.add('open');
+        document.body.classList.add('sidebar-open');
+        if (menuBtn) menuBtn.setAttribute('aria-expanded', 'true');
         if (backdrop) {
             backdrop.hidden = false;
             requestAnimationFrame(() => backdrop.classList.add('show'));
@@ -540,12 +497,34 @@
     function closeSidebar() {
         const sidebar = $('#sidebar');
         const backdrop = $('#sidebarBackdrop');
+        const menuBtn = $('#menuBtn');
         if (!sidebar) return;
         sidebar.classList.remove('open');
+        document.body.classList.remove('sidebar-open');
+        if (menuBtn) menuBtn.setAttribute('aria-expanded', 'false');
         if (backdrop) {
             backdrop.classList.remove('show');
             setTimeout(() => { backdrop.hidden = true; }, 240);
         }
+    }
+
+    /* ==========================================================
+     * 9b. MOBILE SEARCH OVERLAY
+     * ========================================================== */
+    function openMobileSearch() {
+        const wrap = $('#globalSearchWrap');
+        const trigger = $('#mobileSearchBtn');
+        if (!wrap) return;
+        document.body.classList.add('search-open');
+        if (trigger) trigger.setAttribute('aria-expanded', 'true');
+        const input = $('#globalSearch');
+        if (input) setTimeout(() => input.focus({ preventScroll: true }), 180);
+    }
+
+    function closeMobileSearch() {
+        const trigger = $('#mobileSearchBtn');
+        document.body.classList.remove('search-open');
+        if (trigger) trigger.setAttribute('aria-expanded', 'false');
     }
 
     /* ==========================================================
@@ -636,10 +615,6 @@
         refreshIcons();
     }
 
-    /* ----------------------------------------------------------
-     * Chart: QR scans bar chart (dashboard)
-     * Bars animate via attribute transitions (staggered per day).
-     * ---------------------------------------------------------- */
     function renderScanChart() {
         const host = $('#scanChart');
         if (!host) return;
@@ -695,7 +670,6 @@
         ${bars}
         </svg>`;
 
-        // Animate the bars growing from the baseline, staggered per day.
         requestAnimationFrame(() => {
             const rects = host.querySelectorAll('.bar');
             rects.forEach((rect, i) => {
@@ -718,26 +692,18 @@
     /* ==========================================================
      * 11. MENU PAGE
      * ========================================================== */
-    let menuFilters = {
-        search: '',
-        chip: 'all',
-        category: 'all'
-    };
+    let menuFilters = { search: '', chip: 'all', category: 'all' };
 
     function getFilteredMenu() {
         const q = menuFilters.search.trim().toLowerCase();
 
         return state.menu.filter(item => {
-            // Search
             if (q) {
                 const hay = `${item.name} ${item.category} ${item.description || ''}`.toLowerCase();
                 if (!hay.includes(q)) return false;
             }
-
-            // Category filter
             if (menuFilters.category !== 'all' && item.category !== menuFilters.category) return false;
 
-            // Chip filter
             switch (menuFilters.chip) {
                 case 'available':   return item.available === true;
                 case 'unavailable': return item.available === false;
@@ -772,6 +738,7 @@
         const body = $('#menuBody');
         const empty = $('#menuEmpty');
         const table = $('#menuTable');
+        const cards = $('#menuCards');
         if (!body) return;
 
         const items = getFilteredMenu();
@@ -779,6 +746,7 @@
         if (!items.length) {
             body.innerHTML = '';
             if (table) table.style.display = 'none';
+            if (cards) cards.innerHTML = '';
             if (empty) empty.hidden = false;
             return;
         }
@@ -836,12 +804,58 @@
         </tr>
         `).join('');
 
+        if (cards) {
+            cards.innerHTML = items.map(item => `
+            <article class="m-card menu-m-card" data-id="${item.id}">
+            <img class="m-card-img"
+            src="${escapeHtml(item.image)}"
+            alt="${escapeHtml(item.name)}"
+            loading="lazy"
+            data-name="${escapeHtml(item.name)}"
+            data-type="${item.type}">
+            <div class="m-card-body">
+            <div class="m-card-head">
+            <div class="m-card-title">
+            <strong>${escapeHtml(item.name)}</strong>
+            <span class="type-badge">
+            <i class="dotmark ${item.type === 'nonveg' ? 'nonveg' : 'veg'}"></i>
+            ${item.type === 'nonveg' ? 'Non-Veg' : 'Veg'}
+            </span>
+            </div>
+            <div class="row-actions">
+            <button class="row-btn" type="button" data-action="edit-item" data-id="${item.id}"
+            aria-label="Edit ${escapeHtml(item.name)}">
+            <i data-lucide="pencil"></i>
+            </button>
+            <button class="row-btn danger" type="button" data-action="delete-item" data-id="${item.id}"
+            aria-label="Delete ${escapeHtml(item.name)}">
+            <i data-lucide="trash-2"></i>
+            </button>
+            </div>
+            </div>
+            <div class="m-card-meta">
+            <span class="m-card-cat">${escapeHtml(item.category)}</span>
+            <span class="m-card-price">${formatINR(item.price)}</span>
+            </div>
+            <div class="m-card-foot">
+            <button class="avail-toggle ${item.available ? '' : 'off'}"
+            type="button"
+            data-action="toggle-availability"
+            data-id="${item.id}"
+            aria-pressed="${item.available}"
+            aria-label="Toggle availability for ${escapeHtml(item.name)}">
+            <span class="dot"></span>
+            ${item.available ? 'Available' : 'Unavailable'}
+            </button>
+            </div>
+            </div>
+            </article>
+            `).join('');
+        }
+
         refreshIcons();
     }
 
-    /* ----------------------------------------------------------
-     * Item modal — add / edit
-     * ---------------------------------------------------------- */
     function populateItemCategorySelect(selectedName) {
         const sel = $('#itemCategory');
         if (!sel) return;
@@ -919,13 +933,10 @@
         };
 
         if (!nameEl.value.trim()) { addError(nameEl, 'Item name is required.'); ok = false; }
-
         const price = Number(priceEl.value);
         if (!priceEl.value || isNaN(price) || price <= 0) {
-            addError(priceEl, 'Enter a valid price greater than 0.');
-            ok = false;
+            addError(priceEl, 'Enter a valid price greater than 0.'); ok = false;
         }
-
         if (!catEl.value) { addError(catEl, 'Please choose a category.'); ok = false; }
 
         return ok;
@@ -952,7 +963,6 @@
  available: isSwitchOn($('#itemAvailable'))
         };
 
-        // Fall back to a generated placeholder if no image URL supplied
         if (!payload.image) {
             payload.image = placeholderImage(payload.name, payload.type);
         }
@@ -977,9 +987,6 @@
         refreshIcons();
     }
 
-    /* ----------------------------------------------------------
-     * Delete item
-     * ---------------------------------------------------------- */
     function requestDeleteItem(id) {
         const item = state.menu.find(i => i.id === id);
         if (!item) return;
@@ -1003,18 +1010,13 @@
         );
     }
 
-    /* ----------------------------------------------------------
-     * Availability toggle
-     * ---------------------------------------------------------- */
     function toggleAvailability(id) {
         const item = state.menu.find(i => i.id === id);
         if (!item) return;
 
         item.available = !item.available;
-
         const label = item.available ? 'Available' : 'Unavailable';
         showToast(`${item.name} marked ${label}`, item.available ? 'success' : 'warning');
-
         pushActivity(`${item.name} marked ${label.toLowerCase()}`, item.available ? 'check-circle' : 'alert-circle');
         saveState();
 
@@ -1038,11 +1040,13 @@
         const body = $('#catBody');
         const empty = $('#catEmpty');
         const table = $('#catTable');
+        const cards = $('#catCards');
         if (!body) return;
 
         if (!state.categories.length) {
             body.innerHTML = '';
             if (table) table.style.display = 'none';
+            if (cards) cards.innerHTML = '';
             if (empty) empty.hidden = false;
             return;
         }
@@ -1075,6 +1079,37 @@
         </tr>
         `).join('');
 
+        if (cards) {
+            cards.innerHTML = state.categories.map(cat => {
+                const count = countItemsInCategory(cat.name);
+                return `
+                <article class="m-card cat-m-card" data-id="${cat.id}">
+                <div class="m-card-body">
+                <div class="m-card-head">
+                <div class="m-card-title">
+                <strong>${escapeHtml(cat.name)}</strong>
+                <span class="cat-status ${cat.status === 'Hidden' ? 'Hidden' : ''}">${escapeHtml(cat.status || 'Active')}</span>
+                </div>
+                <div class="row-actions">
+                <button class="row-btn" type="button" data-action="edit-category" data-id="${cat.id}"
+                aria-label="Edit ${escapeHtml(cat.name)}">
+                <i data-lucide="pencil"></i>
+                </button>
+                <button class="row-btn danger" type="button" data-action="delete-category" data-id="${cat.id}"
+                aria-label="Delete ${escapeHtml(cat.name)}">
+                <i data-lucide="trash-2"></i>
+                </button>
+                </div>
+                </div>
+                <div class="m-card-meta">
+                <span class="count-pill">${count} item${count === 1 ? '' : 's'}</span>
+                </div>
+                </div>
+                </article>
+                `;
+            }).join('');
+        }
+
         refreshIcons();
     }
 
@@ -1106,7 +1141,6 @@
             return;
         }
 
-        // Duplicate check
         const id = $('#categoryId').value;
         const duplicate = state.categories.some(c =>
         c.name.toLowerCase() === name.toLowerCase() && c.id !== id);
@@ -1125,7 +1159,6 @@
                 const oldName = cat.name;
                 cat.name = name;
                 cat.status = status;
-                // Rename references in menu items
                 if (oldName !== name) {
                     state.menu.forEach(item => {
                         if (item.category === oldName) item.category = name;
@@ -1159,7 +1192,7 @@
                     okLabel: 'Got it',
                     okClass: 'btn-primary'
                 },
-                () => { /* nothing to do — informative only */ }
+                () => { /* informative only */ }
             );
             return;
         }
@@ -1185,7 +1218,6 @@
      * 13. QR PAGE
      * ========================================================== */
     function renderQRPage() {
-        // Sync controls with saved state
         const sizeSel = $('#qrSize');
         const logoSel = $('#qrLogoSelect');
         const nameInput = $('#qrRestaurantName');
@@ -1241,7 +1273,6 @@
                 correctLevel: window.QRCode.CorrectLevel.H
             });
 
-            // Preserve size across renders
             const canvas = target.querySelector('canvas');
             if (canvas) {
                 canvas.style.width = size + 'px';
@@ -1312,14 +1343,11 @@
         const host = $('#phoneMenu');
         if (!host) return;
 
-        // Sync phone header branding with current settings
         const brandEl = $('#phoneBrand');
         const subEl = $('#phoneSub');
         if (brandEl) brandEl.textContent = (state.settings.name || "DADA'S").toUpperCase();
         if (subEl) subEl.textContent = state.settings.tagline || 'Restaurant & Café';
 
-        // Group ALL items by category — unavailable items appear dimmed with a
-        // "Sold out" tag so the preview mirrors a real guest-facing menu.
         const grouped = {};
         state.categories.forEach(c => { grouped[c.name] = []; });
         state.menu.forEach(item => {
@@ -1380,6 +1408,7 @@
      * 14. ORDERS
      * ========================================================== */
     let orderFilter = 'all';
+    let currentOrderId = null;
 
     function renderOrders() {
         renderOrderStats();
@@ -1391,7 +1420,6 @@
         if (!host) return;
 
         const all = state.orders;
-        // Coherent demo story: totals add up to "Today's Orders".
         const pending   = all.filter(o => o.status === 'Pending').length + 10;
         const completed = all.filter(o => o.status === 'Completed').length + 56;
         const cancelled = all.filter(o => o.status === 'Cancelled').length + 4;
@@ -1421,6 +1449,7 @@
         const body = $('#ordersBody');
         const empty = $('#ordersEmpty');
         const table = $('#ordersTable');
+        const cards = $('#ordersCards');
         if (!body) return;
 
         const rows = orderFilter === 'all'
@@ -1430,6 +1459,7 @@
         if (!rows.length) {
             body.innerHTML = '';
             if (table) table.style.display = 'none';
+            if (cards) cards.innerHTML = '';
             if (empty) empty.hidden = false;
             return;
         }
@@ -1447,6 +1477,103 @@
         <td class="muted-sm">${escapeHtml(o.time)}</td>
         </tr>
         `).join('');
+
+        if (cards) {
+            cards.innerHTML = rows.map(o => `
+            <article class="m-card order-m-card" data-action="view-order" data-order-id="${escapeHtml(o.id)}" role="button" tabindex="0">
+            <div class="m-card-head">
+            <div class="m-card-title">
+            <strong>${escapeHtml(o.id)}</strong>
+            <span class="status-pill-sm ${escapeHtml(o.status)}">${escapeHtml(o.status)}</span>
+            </div>
+            <span class="m-card-time">${escapeHtml(o.time)}</span>
+            </div>
+            <div class="m-card-row">
+            <span class="m-card-customer">${escapeHtml(o.customer)}</span>
+            </div>
+            <div class="m-card-meta">
+            <span>${o.items} item${o.items === 1 ? '' : 's'}</span>
+            <span class="m-card-price">${formatINR(o.amount)}</span>
+            </div>
+            <span class="m-card-arrow" aria-hidden="true"><i data-lucide="chevron-right"></i></span>
+            </article>
+            `).join('');
+            refreshIcons();
+        }
+    }
+
+    /* ---- Order detail modal ---- */
+    function openOrderDetail(orderId) {
+        const order = state.orders.find(o => o.id === orderId);
+        if (!order) return;
+
+        currentOrderId = orderId;
+
+        const titleEl = $('#orderDetailTitle');
+        const subEl = $('#orderDetailSub');
+        const bodyEl = $('#orderDetailBody');
+        const actionEl = $('#orderDetailAction');
+        if (!titleEl || !bodyEl || !actionEl) return;
+
+        titleEl.textContent = `Order ${order.id}`;
+        if (subEl) subEl.textContent = `Today · ${order.time}`;
+
+        bodyEl.innerHTML = `
+        <div class="detail-row">
+        <span class="detail-label">Customer</span>
+        <span class="detail-value">${escapeHtml(order.customer)}</span>
+        </div>
+        <div class="detail-row">
+        <span class="detail-label">Items</span>
+        <span class="detail-value">${order.items} item${order.items === 1 ? '' : 's'}</span>
+        </div>
+        <div class="detail-row">
+        <span class="detail-label">Amount</span>
+        <span class="detail-value detail-amount">${formatINR(order.amount)}</span>
+        </div>
+        <div class="detail-row">
+        <span class="detail-label">Status</span>
+        <span class="detail-value"><span class="status-pill-sm ${escapeHtml(order.status)}">${escapeHtml(order.status)}</span></span>
+        </div>
+        <div class="detail-row">
+        <span class="detail-label">Placed at</span>
+        <span class="detail-value">${escapeHtml(order.time)}</span>
+        </div>`;
+
+        if (order.status === 'Pending') {
+            actionEl.textContent = 'Mark Completed';
+            actionEl.className = 'btn btn-primary';
+        } else if (order.status === 'Cancelled') {
+            actionEl.textContent = 'Mark Pending';
+            actionEl.className = 'btn btn-ghost';
+        } else {
+            actionEl.textContent = 'View Only';
+            actionEl.className = 'btn btn-ghost';
+            actionEl.disabled = true;
+        }
+
+        openModal('orderDetailModal');
+    }
+
+    function advanceOrderStatus() {
+        const order = state.orders.find(o => o.id === currentOrderId);
+        if (!order) return;
+
+        if (order.status === 'Pending') {
+            order.status = 'Completed';
+            showToast(`Order ${order.id} marked Completed`);
+            pushActivity(`Order ${order.id} completed`, 'check-circle');
+        } else if (order.status === 'Cancelled') {
+            order.status = 'Pending';
+            showToast(`Order ${order.id} restored to Pending`, 'info');
+        } else {
+            return;
+        }
+
+        saveState();
+        closeModal('orderDetailModal');
+        renderOrders();
+        if (currentPage === 'dashboard') renderDashboard();
     }
 
     /* ==========================================================
@@ -1469,9 +1596,9 @@
         const topCat = state.categoryViews.slice().sort((a, b) => b.value - a.value)[0];
 
         const cards = [
-            { label: 'Total QR Scans', value: formatNumber(scans), icon: 'qr-code', tone: 'gold', note: 'this week' },
- { label: 'Menu Views',     value: formatNumber(views), icon: 'eye',     tone: 'blue', note: 'this week' },
- { label: 'Most Viewed Item', value: topItem, icon: 'flame', tone: 'amber', note: 'last 7 days', small: true },
+            { label: 'Total QR Scans',   value: formatNumber(scans), icon: 'qr-code', tone: 'gold',  note: 'this week' },
+ { label: 'Menu Views',       value: formatNumber(views), icon: 'eye',     tone: 'blue',  note: 'this week' },
+ { label: 'Most Viewed Item', value: topItem,             icon: 'flame',   tone: 'amber', note: 'last 7 days', small: true },
  { label: 'Popular Category', value: topCat ? topCat.name : 'Main Course', icon: 'layers', tone: 'green', note: 'by views', small: true }
         ];
 
@@ -1636,6 +1763,7 @@
 
     function renderCustomerRows() {
         const body = $('#customersBody');
+        const cards = $('#customersCards');
         if (!body) return;
 
         body.innerHTML = state.customers.map(c => `
@@ -1654,6 +1782,24 @@
         <td>${escapeHtml(c.fav)}</td>
         </tr>
         `).join('');
+
+        if (cards) {
+            cards.innerHTML = state.customers.map(c => `
+            <article class="m-card customer-m-card">
+            <span class="avatar" aria-hidden="true">${escapeHtml(c.name.charAt(0))}</span>
+            <div class="m-card-body">
+            <div class="m-card-head">
+            <strong>${escapeHtml(c.name)}</strong>
+            <span class="count-pill">${c.visits} visits</span>
+            </div>
+            <div class="m-card-meta">
+            <span>${escapeHtml(c.last)}</span>
+            <span class="m-card-fav">${escapeHtml(c.fav)}</span>
+            </div>
+            </div>
+            </article>
+            `).join('');
+        }
     }
 
     /* ==========================================================
@@ -1663,18 +1809,12 @@
         const s = state.settings;
 
         const map = {
-            '#setName': s.name,
- '#setTagline': s.tagline,
- '#setPhone': s.phone,
- '#setEmail': s.email,
- '#setAddress': s.address,
- '#setDays': s.days,
- '#setHours': s.hours,
- '#setInstagram': s.instagram,
- '#setFacebook': s.facebook,
- '#setLogo': s.logo,
- '#setPrimary': s.primary,
- '#setAccent': s.accent
+            '#setName': s.name, '#setTagline': s.tagline,
+ '#setPhone': s.phone, '#setEmail': s.email,
+ '#setAddress': s.address, '#setDays': s.days,
+ '#setHours': s.hours, '#setInstagram': s.instagram,
+ '#setFacebook': s.facebook, '#setLogo': s.logo,
+ '#setPrimary': s.primary, '#setAccent': s.accent
         };
 
         Object.keys(map).forEach(sel => {
@@ -1707,13 +1847,11 @@
     function applyBranding() {
         const s = state.settings;
 
-        // Visible text
         const nameEl = $('#brandName');
         const tagEl = $('#brandTagline');
         if (nameEl) nameEl.textContent = s.name;
         if (tagEl) tagEl.textContent = s.tagline;
 
-        // CSS variables
         const root = document.documentElement;
         root.style.setProperty('--primary', s.primary);
         root.style.setProperty('--on-primary', contrastColor(s.primary));
@@ -1721,12 +1859,10 @@
         root.style.setProperty('--on-accent', contrastColor(s.accent));
         root.style.setProperty('--accent-soft', hexToRgba(s.accent, 0.14));
 
-        // QR logo mark
         const qrLogo = $('#qrLogo');
         if (qrLogo) qrLogo.textContent = (s.logo || 'D').charAt(0);
 
-        const avatarEls = $$('.avatar');
-        avatarEls.forEach(a => { a.textContent = (s.logo || 'D').charAt(0); });
+        $$('.avatar').forEach(a => { a.textContent = (s.logo || 'D').charAt(0); });
 
         document.title = `${s.name} · Restaurant Admin Panel`;
     }
@@ -1776,10 +1912,8 @@
      * ========================================================== */
     function handleGlobalSearch(value) {
         const q = (value || '').trim();
-
         if (!q) return;
 
-        // Always jump to the Menu page and apply the search there.
         menuFilters.search = q;
         menuFilters.chip = 'all';
         menuFilters.category = 'all';
@@ -1796,6 +1930,7 @@
         const menuSearch = $('#menuSearch');
         if (menuSearch) menuSearch.value = q;
 
+        closeMobileSearch();
         navigateTo('menu');
     }
 
@@ -1849,20 +1984,24 @@
      * ========================================================== */
     function bindEvents() {
 
-        /* ---- Theme ---- */
         const themeBtn = $('#themeToggle');
         if (themeBtn) themeBtn.addEventListener('click', toggleTheme);
 
-        /* ---- Sidebar / mobile ---- */
+        // Sidebar / mobile drawer
         const menuBtn = $('#menuBtn');
         const sidebarClose = $('#sidebarClose');
         const backdrop = $('#sidebarBackdrop');
-
         if (menuBtn) menuBtn.addEventListener('click', openSidebar);
         if (sidebarClose) sidebarClose.addEventListener('click', closeSidebar);
         if (backdrop) backdrop.addEventListener('click', closeSidebar);
 
-        /* ---- Navigation ---- */
+        // Mobile search
+        const mobileSearchBtn = $('#mobileSearchBtn');
+        const mobileSearchClose = $('#mobileSearchClose');
+        if (mobileSearchBtn) mobileSearchBtn.addEventListener('click', openMobileSearch);
+        if (mobileSearchClose) mobileSearchClose.addEventListener('click', closeMobileSearch);
+
+        // Nav items
         $$('.nav-item').forEach(btn => {
             btn.addEventListener('click', () => navigateTo(btn.dataset.page));
         });
@@ -1876,7 +2015,7 @@
             }
         });
 
-        /* ---- Dropdowns ---- */
+        // Dropdowns
         const notifBtn = $('#notifBtn');
         const notifDropdown = $('#notifDropdown');
         if (notifBtn && notifDropdown) {
@@ -1895,12 +2034,10 @@
             });
         }
 
-        // Close dropdowns on outside click
         document.addEventListener('click', (e) => {
             if (!e.target.closest('.dropdown')) closeAllDropdowns();
         });
 
-            // Profile dropdown items
             document.addEventListener('click', (e) => {
                 const item = e.target.closest('.dropdown-item[data-action]');
                 if (!item) return;
@@ -1909,13 +2046,16 @@
                 if (action === 'go-settings') {
                     closeAllDropdowns();
                     navigateTo('settings');
+                } else if (action === 'toggle-theme') {
+                    closeAllDropdowns();
+                    toggleTheme();
                 } else if (action === 'logout') {
                     closeAllDropdowns();
                     showToast('Demo logout action', 'info');
                 }
             });
 
-            /* ---- Global action buttons (delegated) ---- */
+            // Delegated action buttons
             document.addEventListener('click', (e) => {
                 const el = e.target.closest('[data-action]');
                 if (!el) return;
@@ -1925,87 +2065,55 @@
 
                 switch (action) {
                     case 'add-item':
-                        e.preventDefault();
-                        openItemModal(null);
-                        break;
-
+                        e.preventDefault(); openItemModal(null); break;
                     case 'edit-item':
-                        e.preventDefault();
-                        openItemModal(state.menu.find(i => i.id === id) || null);
-                        break;
-
+                        e.preventDefault(); openItemModal(state.menu.find(i => i.id === id) || null); break;
                     case 'delete-item':
-                        e.preventDefault();
-                        requestDeleteItem(id);
-                        break;
-
+                        e.preventDefault(); requestDeleteItem(id); break;
                     case 'toggle-availability':
-                        e.preventDefault();
-                        toggleAvailability(id);
-                        break;
-
+                        e.preventDefault(); toggleAvailability(id); break;
                     case 'add-category':
-                        e.preventDefault();
-                        openCategoryModal(null);
-                        break;
-
+                        e.preventDefault(); openCategoryModal(null); break;
                     case 'edit-category':
-                        e.preventDefault();
-                        openCategoryModal(state.categories.find(c => c.id === id) || null);
-                        break;
-
+                        e.preventDefault(); openCategoryModal(state.categories.find(c => c.id === id) || null); break;
                     case 'delete-category':
-                        e.preventDefault();
-                        requestDeleteCategory(id);
-                        break;
-
+                        e.preventDefault(); requestDeleteCategory(id); break;
                     case 'clear-filters':
-                        e.preventDefault();
-                        clearMenuFilters();
-                        break;
-
+                        e.preventDefault(); clearMenuFilters(); break;
                     case 'copy-link':
-                        e.preventDefault();
-                        copyMenuLink();
-                        break;
-
+                        e.preventDefault(); copyMenuLink(); break;
                     case 'download-qr':
-                        e.preventDefault();
-                        downloadQRCode();
-                        break;
-
+                        e.preventDefault(); downloadQRCode(); break;
                     case 'open-menu':
-                        e.preventDefault();
-                        openMenuPreview();
-                        break;
-
+                        e.preventDefault(); openMenuPreview(); break;
                     case 'save-qr':
-                        e.preventDefault();
-                        saveQRSettings();
-                        break;
-
+                        e.preventDefault(); saveQRSettings(); break;
                     case 'save-settings':
-                        e.preventDefault();
-                        saveSettings();
-                        break;
-
+                        e.preventDefault(); saveSettings(); break;
                     case 'reset-demo':
-                        e.preventDefault();
-                        resetDemoData();
-                        break;
-
-                    default:
-                        break;
+                        e.preventDefault(); resetDemoData(); break;
+                    case 'view-order':
+                        e.preventDefault(); openOrderDetail(el.dataset.orderId); break;
+                    default: break;
                 }
             });
 
-            /* ---- Menu page: search ---- */
+            // Order card keyboard activation
+            document.addEventListener('keydown', (e) => {
+                if (e.key !== 'Enter' && e.key !== ' ') return;
+                const card = e.target.closest('.order-m-card[data-action="view-order"]');
+                if (!card) return;
+                e.preventDefault();
+                openOrderDetail(card.dataset.orderId);
+            });
+
+            // Menu page search
             const menuSearch = $('#menuSearch');
             if (menuSearch) {
                 menuSearch.addEventListener('input', debounce((e) => handleMenuSearch(e.target.value), 140));
             }
 
-            /* ---- Menu page: chips ---- */
+            // Filter chips
             $$('.chip[data-filter]').forEach(chip => {
                 chip.addEventListener('click', () => {
                     $$('.chip[data-filter]').forEach(c => c.classList.remove('active'));
@@ -2016,7 +2124,7 @@
                 });
             });
 
-            /* ---- Menu page: category dropdown ---- */
+            // Category filter
             const catFilter = $('#menuCategoryFilter');
             if (catFilter) {
                 catFilter.addEventListener('change', () => {
@@ -2026,7 +2134,7 @@
                 });
             }
 
-            /* ---- Global search ---- */
+            // Global search (Enter)
             const globalSearch = $('#globalSearch');
             if (globalSearch) {
                 globalSearch.addEventListener('keydown', (e) => {
@@ -2037,7 +2145,7 @@
                 });
             }
 
-            /* ---- Item form ---- */
+            // Item form
             const itemForm = $('#itemForm');
             if (itemForm) itemForm.addEventListener('submit', handleItemSubmit);
 
@@ -2048,11 +2156,11 @@
             });
         }
 
-        /* ---- Category form ---- */
+        // Category form
         const catForm = $('#categoryForm');
         if (catForm) catForm.addEventListener('submit', handleCategorySubmit);
 
-        /* ---- Confirm modal ---- */
+        // Confirm modal OK
         const confirmOk = $('#confirmOk');
         if (confirmOk) {
             confirmOk.addEventListener('click', () => {
@@ -2063,7 +2171,11 @@
             });
         }
 
-        /* ---- Modal close (backdrop + close buttons) ---- */
+        // Order detail action
+        const orderDetailAction = $('#orderDetailAction');
+        if (orderDetailAction) orderDetailAction.addEventListener('click', advanceOrderStatus);
+
+        // Modal close triggers
         $$('.modal').forEach(modal => {
             modal.addEventListener('click', (e) => {
                 if (e.target.closest('[data-close-modal]')) {
@@ -2073,25 +2185,20 @@
             });
         });
 
-        /* ---- Escape key ---- */
+        // Escape key: modal → dropdown → mobile search → sidebar
         document.addEventListener('keydown', (e) => {
             if (e.key !== 'Escape') return;
 
-            // Close modal first
             const openModalEl = document.querySelector('.modal.open');
-            if (openModalEl) {
-                closeModal(openModalEl);
-                return;
-            }
+            if (openModalEl) { closeModal(openModalEl); return; }
 
-            // Then dropdowns
+            if (document.body.classList.contains('search-open')) { closeMobileSearch(); return; }
+
             closeAllDropdowns();
-
-            // Then mobile sidebar
             closeSidebar();
         });
 
-        /* ---- QR controls ---- */
+        // QR controls
         const qrBorder = $('#qrBorder');
         if (qrBorder) {
             qrBorder.addEventListener('click', () => {
@@ -2128,13 +2235,11 @@
             });
         }
 
-        /* ---- Dashboard chart range ---- */
+        // Dashboard chart range
         const chartRange = $('#chartRange');
-        if (chartRange) {
-            chartRange.addEventListener('change', () => renderScanChart());
-        }
+        if (chartRange) chartRange.addEventListener('change', () => renderScanChart());
 
-        /* ---- Order filters ---- */
+        // Order filters
         $$('[data-order-filter]').forEach(btn => {
             btn.addEventListener('click', () => {
                 $$('[data-order-filter]').forEach(b => b.classList.remove('active'));
@@ -2144,7 +2249,7 @@
             });
         });
 
-        /* ---- Image error fallback (capture phase) ---- */
+        // Image error fallback
         document.addEventListener('error', (e) => {
             const img = e.target;
             if (img && img.tagName === 'IMG' && !img.dataset.fallbackApplied) {
@@ -2153,10 +2258,8 @@
             }
         }, true);
 
-        /* ---- Responsive chart re-render ---- */
-        const handleResize = debounce(() => {
-            renderVisibleCharts();
-        }, 220);
+        // Chart re-render on resize
+        const handleResize = debounce(() => { renderVisibleCharts(); }, 220);
         window.addEventListener('resize', handleResize);
     }
 
@@ -2171,7 +2274,6 @@
         applyBranding();
         bindEvents();
 
-        // Render every page once so the data is ready when navigated to.
         renderDashboard();
         renderMenuCategoryFilter();
         renderMenu();
@@ -2183,11 +2285,9 @@
         renderSettings();
 
         navigateTo('dashboard');
-
         refreshIcons();
     }
 
-    /* Kick things off once the DOM is ready. */
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', init);
     } else {
