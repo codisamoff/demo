@@ -2,8 +2,9 @@
 <html lang="en" data-theme="light">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="description" content="DADA'S Restaurant & Café — QR Menu Admin Panel Demo" />
+<meta name="theme-color" content="#1c1a17" />
 <title>DADA'S · Restaurant Admin Panel</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -29,6 +30,7 @@
     </div>
 
     <nav class="nav" id="nav">
+      <p class="nav-section">Main</p>
       <button class="nav-item active" data-page="dashboard">
         <i data-lucide="layout-dashboard"></i><span>Dashboard</span>
       </button>
@@ -50,6 +52,8 @@
       <button class="nav-item" data-page="customers">
         <i data-lucide="users"></i><span>Customers</span>
       </button>
+
+      <p class="nav-section">Management</p>
       <button class="nav-item" data-page="settings">
         <i data-lucide="settings"></i><span>Settings</span>
       </button>
@@ -75,7 +79,7 @@
 
     <!-- ---------------------------- TOPBAR ---------------------------- -->
     <header class="topbar">
-      <button class="icon-btn menu-btn" id="menuBtn" aria-label="Open navigation">
+      <button class="icon-btn menu-btn" id="menuBtn" aria-label="Open navigation" aria-expanded="false" aria-controls="sidebar">
         <i data-lucide="menu"></i>
       </button>
 
@@ -85,17 +89,28 @@
       </div>
 
       <div class="topbar-actions">
-        <label class="search-box" for="globalSearch">
+
+        <!-- Global search: inline on desktop, overlay on mobile -->
+        <div class="global-search-wrap" id="globalSearchWrap">
+          <label class="search-box" for="globalSearch">
+            <i data-lucide="search"></i>
+            <input id="globalSearch" type="search" placeholder="Search menu items…" aria-label="Search menu items" autocomplete="off" />
+          </label>
+          <button class="icon-btn search-close" id="mobileSearchClose" type="button" aria-label="Close search">
+            <i data-lucide="x"></i>
+          </button>
+        </div>
+
+        <button class="icon-btn mobile-search-trigger" id="mobileSearchBtn" type="button" aria-label="Open search" aria-expanded="false">
           <i data-lucide="search"></i>
-          <input id="globalSearch" type="search" placeholder="Search menu items…" aria-label="Search menu items" autocomplete="off" />
-        </label>
+        </button>
 
         <div class="status-pill" title="Restaurant status">
           <span class="pulse" aria-hidden="true"></span>
           <span>Restaurant Online</span>
         </div>
 
-        <button class="icon-btn" id="themeToggle" aria-label="Toggle dark mode" title="Toggle theme">
+        <button class="icon-btn theme-btn" id="themeToggle" aria-label="Toggle dark mode" title="Toggle theme">
           <i data-lucide="moon"></i>
         </button>
 
@@ -148,6 +163,10 @@
             </button>
             <button class="dropdown-item" data-action="go-settings" role="menuitem">
               <i data-lucide="settings"></i> Settings
+            </button>
+            <div class="dropdown-sep"></div>
+            <button class="dropdown-item" data-action="toggle-theme" role="menuitem">
+              <i data-lucide="moon"></i> Toggle Theme
             </button>
             <div class="dropdown-sep"></div>
             <button class="dropdown-item danger" data-action="logout" role="menuitem">
@@ -289,6 +308,7 @@
               <tbody id="menuBody"></tbody>
             </table>
           </div>
+          <div class="mobile-list" id="menuCards"></div>
           <div class="empty-state" id="menuEmpty" hidden>
             <div class="empty-icon"><i data-lucide="search-x"></i></div>
             <h4>No menu items found</h4>
@@ -326,6 +346,7 @@
               <tbody id="catBody"></tbody>
             </table>
           </div>
+          <div class="mobile-list" id="catCards"></div>
           <div class="empty-state" id="catEmpty" hidden>
             <div class="empty-icon"><i data-lucide="layers"></i></div>
             <h4>No categories yet</h4>
@@ -455,6 +476,7 @@
               <tbody id="ordersBody"></tbody>
             </table>
           </div>
+          <div class="mobile-list" id="ordersCards"></div>
           <div class="empty-state" id="ordersEmpty" hidden>
             <div class="empty-icon"><i data-lucide="receipt-text"></i></div>
             <h4>No orders found</h4>
@@ -528,6 +550,7 @@
               <tbody id="customersBody"></tbody>
             </table>
           </div>
+          <div class="mobile-list" id="customersCards"></div>
         </div>
       </section>
 
@@ -772,10 +795,29 @@
   </div>
 </div>
 
+<!-- ============================ ORDER DETAIL MODAL ============================ -->
+<div class="modal" id="orderDetailModal" role="dialog" aria-modal="true" aria-labelledby="orderDetailTitle" hidden>
+  <div class="modal-backdrop" data-close-modal></div>
+  <div class="modal-panel sheet sm">
+    <header class="modal-head">
+      <div>
+        <h3 id="orderDetailTitle">Order #1024</h3>
+        <p class="muted-sm" id="orderDetailSub">Today · 8:42 PM</p>
+      </div>
+      <button class="icon-btn" type="button" data-close-modal aria-label="Close dialog"><i data-lucide="x"></i></button>
+    </header>
+    <div class="modal-body order-detail-body" id="orderDetailBody"></div>
+    <footer class="modal-foot">
+      <button type="button" class="btn btn-ghost" data-close-modal>Close</button>
+      <button type="button" class="btn btn-primary" id="orderDetailAction">Mark Completed</button>
+    </footer>
+  </div>
+</div>
+
 <!-- ============================ MENU PREVIEW MODAL ============================ -->
 <div class="modal" id="previewModal" role="dialog" aria-modal="true" aria-labelledby="previewTitle" hidden>
   <div class="modal-backdrop" data-close-modal></div>
-  <div class="modal-panel preview-panel">
+  <div class="modal-panel preview-panel sheet">
     <header class="modal-head">
       <h3 id="previewTitle">Menu Preview</h3>
       <button class="icon-btn" type="button" data-close-modal aria-label="Close dialog"><i data-lucide="x"></i></button>
